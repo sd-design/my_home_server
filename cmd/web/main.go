@@ -10,8 +10,9 @@ func main() {
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/snippet", showSnippet)
 	mux.HandleFunc("/snippet/create", createSnippet)
-	log.Println("Starting server on :4000")
-	err := http.ListenAndServe(":4000", mux)
+	mux.HandleFunc("/tech/my_ip", getClientIp)
+	log.Println("Starting server on :4200")
+	err := http.ListenAndServe(":4200", mux)
 	log.Fatal(err)
 
 }

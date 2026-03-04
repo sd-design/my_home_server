@@ -29,3 +29,8 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write([]byte("Create a new snippet..."))
 }
+
+func getClientIp(w http.ResponseWriter, r *http.Request) {
+	ipClient := r.RemoteAddr
+	fmt.Fprintf(w, "Your Ip-adress %s", ipClient)
+}
