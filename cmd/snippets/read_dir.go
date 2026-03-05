@@ -3,12 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
+// Структура для представления информации о файле/директории
 type FileInfo struct {
 	Name    string `json:"name"`
 	Path    string `json:"path"`
@@ -17,44 +16,14 @@ type FileInfo struct {
 	ModTime string `json:"mod_time"`
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-	w.Write([]byte("Hello from Snippetbox"))
-}
-func showSnippet(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || id < 1 {
-		http.NotFound(w, r)
-		return
-	}
-	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
-}
-func createSnippet(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		http.Error(w, "Method Not Allowed", 405)
-		return
-	}
-	w.Write([]byte("Create a new snippet..."))
-}
-
-func getClientIp(w http.ResponseWriter, r *http.Request) {
-	ipClient := r.RemoteAddr
-	fmt.Fprintf(w, "Your Ip-adress %s", ipClient)
-}
-
-func readFolder(w http.ResponseWriter, r *http.Request) {
-	folderName, err := strconv.Atoi(r.URL.Query().Get("folder"))
-
+func main() {
+	// Получаем имя директории из аргументов командной строки
 	if len(os.Args) < 2 {
 		fmt.Println("Использование: program <directory_path>")
 		os.Exit(1)
 	}
 
-	dirPath := "/d/DEV/my_home_server/" + folderName
+	dirPath := os.Args[1]
 
 	// Проверяем существование директории
 	info, err := os.Stat(dirPath)
@@ -90,6 +59,7 @@ func readFolder(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(string(jsonData))
 }
 
+// Функция для получения информации о файлах в директории
 func getFilesInfo(dirPath string) ([]FileInfo, error) {
 	var result []FileInfo
 

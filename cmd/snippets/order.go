@@ -15,5 +15,5 @@ func main() {
 	for _, v := range order {
 		total += pricelist[v]
 	}
-	fmt.Println("Стоимость заказа ", total)
+	fmt.Println("Стоимость заказа: ", total)
 }
