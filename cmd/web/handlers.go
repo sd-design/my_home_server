@@ -17,6 +17,8 @@ type FileInfo struct {
 	ModTime string `json:"mod_time"`
 }
 
+const RootDir = "D:\\DEV\\my_home_server\\"
+
 func home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -47,14 +49,9 @@ func getClientIp(w http.ResponseWriter, r *http.Request) {
 }
 
 func readFolder(w http.ResponseWriter, r *http.Request) {
-	folderName, err := strconv.Atoi(r.URL.Query().Get("folder"))
+	folderName := r.URL.Query().Get("folder")
 
-	if len(os.Args) < 2 {
-		fmt.Println("Использование: program <directory_path>")
-		os.Exit(1)
-	}
-
-	dirPath := "/d/DEV/my_home_server/" + folderName
+	dirPath := RootDir + folderName
 
 	// Проверяем существование директории
 	info, err := os.Stat(dirPath)
@@ -87,7 +84,7 @@ func readFolder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Выводим JSON
-	fmt.Println(string(jsonData))
+	fmt.Fprintf(w, string(jsonData))
 }
 
 func getFilesInfo(dirPath string) ([]FileInfo, error) {
