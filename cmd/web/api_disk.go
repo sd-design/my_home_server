@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-const RootDir = "D:\\DEV\\my_home_server\\"
-
 // FileInfo содержит информацию о файле или папке
 type FileInfo struct {
 	Name         string `json:"name"`
@@ -142,22 +140,4 @@ func listDirectoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(jsonData)
-}
-
-func main() {
-	// Настраиваем обработчик для маршрута /list
-	http.HandleFunc("/list", listDirectoryHandler)
-
-	fmt.Println("Server starting on :8080...")
-	fmt.Println("Use: http://localhost:8080/list?path=/your/directory/path")
-	fmt.Println("Examples:")
-	fmt.Println("  http://localhost:8080/list?path=/tmp")
-	fmt.Println("  http://localhost:8080/list?path=/tmp/subdir_1")
-	fmt.Println("  http://localhost:8080/list?path=/tmp/subdir_1/subdir_1_1")
-
-	// Запускаем HTTP‑сервер на порту 8080
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Printf("Server failed to start: %v\n", err)
-	}
 }
