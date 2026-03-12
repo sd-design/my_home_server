@@ -12,6 +12,10 @@ func main() {
 	mux.HandleFunc("/snippet/create", createSnippet)
 	mux.HandleFunc("/api/disk", listDirectoryHandler)
 	mux.HandleFunc("/tech/my_ip", getClientIp)
+
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+
 	log.Println("Starting server on :4200")
 	err := http.ListenAndServe(":4200", mux)
 	log.Fatal(err)
