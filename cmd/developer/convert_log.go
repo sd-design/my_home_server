@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"io"
@@ -124,6 +125,15 @@ func main() {
 		return
 	}
 	fmt.Printf("Encrypted: %x\n", ciphertext)
+
+	hexString := hex.EncodeToString(ciphertext)
+	errWrite := os.WriteFile("output.txt", []byte(hexString), 0644)
+	if errWrite != nil {
+		fmt.Println("Ошибка:", err)
+		return
+	}
+
+	fmt.Println("Файл успешно записан")
 
 	//switch direction {
 	//case "in":
