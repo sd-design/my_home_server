@@ -8,14 +8,27 @@ import (
 	"strconv"
 )
 
+type PageData struct {
+	PageTitle string
+	Message   string
+	Items     []string
+}
+
 func home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
+
+	Message := "Your IP-address: " + r.RemoteAddr
+	data := PageData{
+		PageTitle: "My home server – Cloaca v.1.0",
+		Message:   Message,
+	}
+
 	files := []string{
-		"./ui/html/header.tmpl",
 		"./ui/html/basic.body.tmpl",
+		"./ui/html/header.tmpl",
 		"./ui/html/footer.tmpl",
 	}
 
@@ -27,7 +40,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-	err = ts.Execute(w, nil)
+	err = ts.Execute(w, data)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)
