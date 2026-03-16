@@ -12,6 +12,7 @@ func main() {
 	mux.HandleFunc("/snippet/create", createSnippet)
 	mux.HandleFunc("/api/disk", listDirectoryHandler)
 	mux.HandleFunc("/tech/my_ip", getClientIp)
+	mux.HandleFunc("/filemanager", showfileManager)
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
