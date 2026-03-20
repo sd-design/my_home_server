@@ -84,12 +84,7 @@ func decryptGCM(ciphertext []byte, key string) ([]byte, error) {
 	return plaintext, nil
 }
 
-func main() {
-
-	keyFile := flag.String("key", "encrypt.key", "key file")
-	logFile := flag.String("log", "development.log", "log file")
-	//direction := flag.String("action", "out", "direction")
-
+func actionIn(keyFile *string, logFile *string) {
 	dataKey, err := os.ReadFile(*keyFile)
 	if err != nil {
 		fmt.Println("Ошибка чтения файла ключа:", err)
@@ -97,8 +92,7 @@ func main() {
 	}
 	contentKey := string(dataKey)
 
-	//key := byte(contentKey) // 32 байта для AES-256
-	fmt.Println(contentKey)
+	//fmt.Println(contentKey)
 
 	file, err := os.Open(*logFile)
 	if err != nil {
@@ -116,7 +110,6 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Ошибка при чтении log файла:", err)
 	}
-
 	plaintext := []byte(content)
 
 	ciphertext, err := encryptGCM(plaintext, contentKey)
@@ -127,7 +120,7 @@ func main() {
 	fmt.Printf("Encrypted: %x\n", ciphertext)
 
 	hexString := hex.EncodeToString(ciphertext)
-	errWrite := os.WriteFile("output.txt", []byte(hexString), 0644)
+	errWrite := os.WriteFile("convert.log", []byte(hexString), 0644)
 	if errWrite != nil {
 		fmt.Println("Ошибка:", err)
 		return
@@ -135,30 +128,38 @@ func main() {
 
 	fmt.Println("Файл успешно записан")
 
-	//switch direction {
-	//case "in":
-	//	ciphertext, err := encryptGCM(plaintext, key)
-	//	if err != nil {
-	//		fmt.Println("Error encrypting:", err)
-	//		return
-	//	}
-	//	fmt.Printf("Encrypted: %x\n", ciphertext)
-	//case "out":
+}
 
-	// //Расшифровываем
-	//	ciphertext := "hello"
-	//	plaintext2, err := decryptGCM(ciphertext, key)
-	//	if err != nil {
-	//		fmt.Println("Ошибка расшифрования:", err)
-	//		return
-	//	}
-	//
-	//	fmt.Printf("Расшифрованный текст: %s\n", plaintext2)
-	//}
+func actionOut(keyFile *string, logFile *string) {
+	dataKey, err := os.ReadFile(*keyFile)
+	if err != nil {
+		fmt.Println("Ошибка чтения файла ключа:", err)
+		os.Exit(1)
+	}
+	contentKey := string(dataKey)
 
-	decodedString := ciphertext
-	ciphertext2 := []byte(decodedString)
-	plaintext2, err := decryptGCM(ciphertext2, contentKey)
+	//fmt.Println(contentKey)
+
+	file, err := os.Open("convert.log")
+	if err != nil {
+		fmt.Println("Ошибка открытия файла:", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var content string
+	for scanner.Scan() {
+		content += scanner.Text() + "\n"
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Ошибка при чтении log файла:", err)
+	}
+
+	fmt.Println(content)
+	ciphertext, err := hex.DecodeString(content)
+	plaintext2, err := decryptGCM(ciphertext, contentKey)
 	if err != nil {
 		fmt.Println("Ошибка расшифрования:", err)
 		return
@@ -166,10 +167,31 @@ func main() {
 
 	fmt.Printf("Расшифрованный текст:\n %s\n", plaintext2)
 
-	//ciphertext, err := hex.DecodeString(ciphertextHex)
-	//if err != nil {
-	//	fmt.Println("Ошибка декодирования hex:", err)
-	//	return
-	//}
+}
+
+func main() {
+
+	direction := flag.String("action", "NONE", "direction")
+	keyFile := flag.String("key", "encrypt.key", "key file")
+	logFile := flag.String("log", "development.log", "log file")
+
+	flag.Parse()
+
+	fmt.Println(*direction)
+
+	if *direction == "NONE" {
+		fmt.Println("Не указан параметр \"-action=\" направление кодирования/декодирования")
+		os.Exit(1)
+	}
+
+	switch *direction {
+	case "in":
+		//Шишифруем
+		actionIn(keyFile, logFile)
+	case "out":
+		//Расшифровываем
+		actionOut(keyFile, logFile)
+
+	}
 
 }

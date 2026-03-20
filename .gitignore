@@ -32,3 +32,4 @@ go.work.sum
 # .vscode/
 
 cmd/developer/encrypt.key
+cmd/developer/development.log
