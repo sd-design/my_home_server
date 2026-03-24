@@ -1,0 +1,1 @@
+console.log('%c My Home project of Golang App', 'background: #0d6efd; color: #fff; padding:20px; margin:10px')
